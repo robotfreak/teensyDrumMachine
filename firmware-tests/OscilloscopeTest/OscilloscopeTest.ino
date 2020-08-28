@@ -29,9 +29,22 @@ AudioControlSGTL5000     sgtl5000_1;
 
 //ILI9341_t3 tft = ILI9341_t3(TFT_CS, TFT_DC, TFT_RST, TFT_MOSI, TFT_SCLK, TFT_MISO);
 ILI9341_t3 tft = ILI9341_t3(TFT_CS, TFT_DC);
-
+/*
 void enableScope(boolean enable) {
   enable ? scope.ScreenSetup(&tft) : scope.ScreenSetup(NULL);
+}
+*/
+
+void plotDataPoints(void)
+{
+  int x;
+  int y = 0;
+
+  tft.fillScreen(ILI9341_BLACK);
+  for(x=0;x<256; x++) { 
+    y = scope.buffer[x] >> 9;;
+    tft.drawPixel(x+20, y+128, ILI9341_GREEN);
+  }
 }
 
 void setup() {
@@ -47,7 +60,7 @@ void setup() {
   AudioMemory(8);
   sgtl5000_1.enable();
   sgtl5000_1.volume(0.5);
-  enableScope(true);
+  //enableScope(true);
 
   //SPI.setMOSI(SDCARD_MOSI_PIN);
   //SPI.setSCK(SDCARD_SCK_PIN);
@@ -64,8 +77,9 @@ void setup() {
 void loop() {
   if (playSdWav1.isPlaying() == false) {
     Serial.println("Start playing");
-    playSdWav1.play("SDTEST2.WAV");
+    playSdWav1.play("SDTEST1.WAV");
     delay(10); // wait for library to parse WAV info
   }
   scope.update();
+  plotDataPoints();
 }
